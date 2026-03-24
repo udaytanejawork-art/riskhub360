@@ -9,12 +9,22 @@ function stripHtml(s) {
   return (d.textContent || '').replace(/\s+/g, ' ').trim()
 }
 
-function classify(title, desc) {
+// Classify by keywords — only called when feed has no forceCat
+function classifyByKeywords(title, desc) {
   const t = ((title || '') + ' ' + (desc || '')).toLowerCase()
   for (const { cat, kw } of CATEGORY_RULES) {
     if (kw.some(w => t.includes(w))) return cat
   }
   return 'general'
+}
+
+// Main classification — source-level override takes priority
+function classify(title, desc, forceCat) {
+  // If the feed has a forced category, use it directly
+  if (forceCat) return forceCat
+
+  // Otherwise fall through to keyword matching
+  return classifyByKeywords(title, desc)
 }
 
 function isOpportunity(title, desc) {
@@ -39,14 +49,13 @@ export function timeAgo(d) {
   return 'just now'
 }
 
-function parseRSS(xml, label) {
+function parseRSS(xml, label, forceCat) {
   try {
-    // Some feeds return HTML error pages — reject early
     if (xml.trim().startsWith('<!DOCTYPE') || xml.trim().startsWith('<html')) return []
 
     const doc = new DOMParser().parseFromString(xml, 'text/xml')
     if (doc.querySelector('parsererror')) {
-      // Try parsing as HTML as a fallback (some feeds have minor XML errors)
+      // Minor XML errors — try HTML parser as fallback
       const doc2 = new DOMParser().parseFromString(xml, 'text/html')
       if (!doc2.querySelectorAll('item, entry').length) return []
     }
@@ -60,21 +69,16 @@ function parseRSS(xml, label) {
         return (node?.textContent || node?.getAttribute('href') || '').trim()
       }
 
-      // Handle both RSS <link> text and Atom <link href="...">
-      const linkEl  = el.querySelector('link')
-      const link    = g('link') || linkEl?.getAttribute('href') || '#'
-      const title   = stripHtml(g('title'))
-
-      // Try multiple description fields
-      const rawDesc = g('description') || g('summary') || g('content\\:encoded') || g('content') || ''
-      const desc    = stripHtml(rawDesc).slice(0, 200)
-
-      // Try multiple date fields
-      const date = g('pubDate') || g('published') || g('updated') || g('dc\\:date') || ''
+      const linkEl = el.querySelector('link')
+      const link   = g('link') || linkEl?.getAttribute('href') || '#'
+      const title  = stripHtml(g('title'))
+      const raw    = g('description') || g('summary') || g('content\\:encoded') || g('content') || ''
+      const desc   = stripHtml(raw).slice(0, 200)
+      const date   = g('pubDate') || g('published') || g('updated') || g('dc\\:date') || ''
 
       if (!title || title.length < 4) return null
 
-      const cat = classify(title, desc)
+      const cat = classify(title, desc, forceCat)
 
       return {
         title,
@@ -83,12 +87,13 @@ function parseRSS(xml, label) {
         date,
         source: label,
         cat,
+        forcedCat: !!forceCat, // flag so we can debug in console if needed
         isOpp: isOpportunity(title, desc),
       }
     }).filter(Boolean)
 
   } catch (err) {
-    console.warn(`[parseRSS] Failed to parse feed from ${label}:`, err.message)
+    console.warn(`[parseRSS] Failed for "${label}":`, err.message)
     return []
   }
 }
@@ -101,12 +106,8 @@ export function useFeeds() {
   const [loaded,  setLoaded]  = useState(0)
   const [status,  setStatus]  = useState('idle')
   const timerRef              = useRef(null)
-  const poolRef               = useRef([])   // ref so fetchFeed closure stays fresh
 
-  // Keep poolRef in sync
-  useEffect(() => { poolRef.current = pool }, [pool])
-
-  const fetchFeed = useCallback(async ({ url, label }) => {
+  const fetchFeed = useCallback(async ({ url, label, forceCat }) => {
     setSources(prev => ({ ...prev, [label]: 'loading' }))
     try {
       const res = await fetch(`/api/feeds?url=${encodeURIComponent(url)}`)
@@ -117,7 +118,8 @@ export function useFeeds() {
       }
 
       const xml   = await res.text()
-      const items = parseRSS(xml, label)
+      // Pass forceCat into parseRSS so classification happens at parse time
+      const items = parseRSS(xml, label, forceCat || null)
 
       if (!items.length) throw new Error('No articles parsed')
 
@@ -132,7 +134,7 @@ export function useFeeds() {
       return true
 
     } catch (err) {
-      console.warn(`[useFeeds] ${label} failed:`, err.message)
+      console.warn(`[useFeeds] "${label}" failed:`, err.message)
       setSources(prev => ({ ...prev, [label]: 'err' }))
       return false
     }
@@ -147,15 +149,14 @@ export function useFeeds() {
     const tier1 = FEEDS.filter(f => f.tier === 1)
     const tier2 = FEEDS.filter(f => f.tier === 2)
 
-    // Tier 1 — await all (fast, updates UI as each arrives)
+    // Tier 1 in parallel — UI updates as each feed arrives
     await Promise.allSettled(tier1.map(fetchFeed))
 
-    // Tier 2 — fire and forget (slower official sources)
+    // Tier 2 in background — doesn't block tier 1 display
     Promise.allSettled(tier2.map(fetchFeed)).then(() => setStatus('done'))
 
     setStatus('done')
 
-    // Auto-refresh every 5 minutes
     clearTimeout(timerRef.current)
     timerRef.current = setTimeout(loadAll, 5 * 60 * 1000)
   }, [fetchFeed])
@@ -165,7 +166,7 @@ export function useFeeds() {
     return () => clearTimeout(timerRef.current)
   }, [loadAll])
 
-  // Derive per-section lists
+  // Return articles for a specific section, deduped by title
   const getSection = useCallback((key) => {
     const cats = SECTION_CATS[key]
     const seen = new Set()
@@ -178,6 +179,7 @@ export function useFeeds() {
       .slice(0, 25)
   }, [pool])
 
+  // Return opportunity articles, deduped across all sections
   const opportunities = useCallback(() => {
     const seen = new Set()
     return pool
