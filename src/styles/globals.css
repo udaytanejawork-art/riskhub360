@@ -1,44 +1,44 @@
 /* ═══════════════════════════════════════════════════════
    RiskHub360 — Design System
    Fonts: Sora (headings) + DM Sans (body)
-   Palette: Navy #002B5B · Orange #FF5B35 · White
+   Palette: Slate #40403E · Cloud #BFBFBA · Orange #FF5B35
 ═══════════════════════════════════════════════════════ */
 
 :root {
-  /* Brand */
+  /* Brand — logo navy stays, orange is primary accent */
   --navy:       #002B5B;
   --navy2:      #003F82;
-  --navy3:      #EAF0F8;
-  --navy4:      #C8DCEF;
+  --navy3:      #2E2E2C;
+  --navy4:      #4A4A47;
   --orange:     #FF5B35;
   --orange2:    #FF7A55;
   --orange-dk:  #E04422;
-  --orange-pale:#FFF3EF;
+  --orange-pale:rgba(255,91,53,0.12);
 
-  /* Surface */
-  --bg:         #F0F4F9;
-  --bg2:        #E8EEF5;
-  --card:       #FFFFFF;
-  --card-hover: #FAFCFF;
+  /* Surface — dark charcoal base */
+  --bg:         #40403E;
+  --bg2:        #383836;
+  --card:       #4A4A48;
+  --card-hover: #525250;
 
-  /* Borders */
-  --border:     rgba(0,43,91,0.09);
-  --border2:    rgba(0,43,91,0.16);
+  /* Borders — subtle light lines on dark bg */
+  --border:     rgba(191,191,186,0.12);
+  --border2:    rgba(191,191,186,0.22);
 
-  /* Text */
-  --txt:        #0A1628;
-  --txt2:       #2E4060;
-  --txt3:       #6B84A0;
-  --txt4:       #9FB3C8;
+  /* Text — cloud light primary, stepped down for hierarchy */
+  --txt:        #BFBFBA;
+  --txt2:       #A0A09C;
+  --txt3:       #7A7A76;
+  --txt4:       #5A5A57;
 
-  /* Semantic */
-  --gold:       #D97706;
-  --green:      #15803D;
-  --green2:     #DCFCE7;
-  --red:        #B91C1C;
-  --red2:       #FEE2E2;
-  --blue:       #1D4ED8;
-  --purple:     #6D28D9;
+  /* Semantic — adjusted for dark bg legibility */
+  --gold:       #F59E0B;
+  --green:      #34D399;
+  --green2:     rgba(52,211,153,0.15);
+  --red:        #F87171;
+  --red2:       rgba(248,113,113,0.15);
+  --blue:       #60A5FA;
+  --purple:     #A78BFA;
 
   /* Typography */
   --font-head:  'Sora', sans-serif;
@@ -71,7 +71,7 @@
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
   font-family: var(--font-body);
-  background: var(--bg);
+  background: #40403E;
   color: var(--txt);
   min-height: 100vh;
   line-height: 1.55;
@@ -151,14 +151,14 @@ a { color: inherit; }
   border-radius: 4px;
   flex-shrink: 0;
 }
-.cat-pill.breaking   { background: rgba(185,28,28,.08);  color: #B91C1C; }
-.cat-pill.regulatory { background: rgba(180,83,9,.09);   color: #92400E; }
-.cat-pill.macro      { background: rgba(29,78,216,.08);  color: #1D4ED8; }
-.cat-pill.market     { background: rgba(109,40,217,.08); color: #6D28D9; }
-.cat-pill.cyber      { background: rgba(255,91,53,.09);  color: var(--orange-dk); }
-.cat-pill.esg        { background: rgba(21,128,61,.08);  color: #15803D; }
-.cat-pill.banking    { background: rgba(0,43,91,.08);    color: var(--navy2); }
-.cat-pill.general    { background: rgba(107,132,160,.1); color: var(--txt3); }
+.cat-pill.breaking   { background: rgba(248,113,113,.15); color: #FCA5A5; }
+.cat-pill.regulatory { background: rgba(251,191,36,.15);  color: #FCD34D; }
+.cat-pill.macro      { background: rgba(96,165,250,.15);  color: #93C5FD; }
+.cat-pill.market     { background: rgba(167,139,250,.15); color: #C4B5FD; }
+.cat-pill.cyber      { background: rgba(255,91,53,.18);   color: #FF7A55; }
+.cat-pill.esg        { background: rgba(52,211,153,.15);  color: #6EE7B7; }
+.cat-pill.banking    { background: rgba(96,165,250,.15);  color: #93C5FD; }
+.cat-pill.general    { background: rgba(191,191,186,.1);  color: var(--txt3); }
 
 /* ── Status dot ─────────────────────────────────────── */
 .status-dot {
@@ -168,8 +168,8 @@ a { color: inherit; }
   flex-shrink: 0;
   transition: background var(--duration);
 }
-.status-dot.ok  { background: var(--green); }
-.status-dot.err { background: var(--red); }
+.status-dot.ok  { background: #34D399; }
+.status-dot.err { background: #F87171; }
 
 /* ── Responsive helpers ──────────────────────────────── */
 @media (max-width: 1200px) {
