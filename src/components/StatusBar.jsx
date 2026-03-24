@@ -12,7 +12,7 @@ export default function StatusBar({ sources, loaded, status, pool }) {
 
   return (
     <div style={{
-      background: '#fff',
+      background: 'var(--card)',
       borderBottom: '1px solid var(--border)',
       padding: '0 var(--pad)',
       display: 'flex',
