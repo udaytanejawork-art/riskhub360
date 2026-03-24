@@ -91,7 +91,7 @@ export default function FeedColumn({ sectionKey, title, subtitle, icon, articles
 
       {/* Filter tabs */}
       <div style={{
-        background: '#fff',
+        background: 'var(--card)',
         borderBottom: '1px solid var(--border)',
         padding: '8px 12px',
         display: 'flex', gap: 5,
@@ -108,7 +108,7 @@ export default function FeedColumn({ sectionKey, title, subtitle, icon, articles
                 fontSize: 10.5, fontWeight: 600,
                 padding: '4px 12px', borderRadius: 5,
                 border: `1px solid ${active ? 'var(--orange)' : 'var(--border)'}`,
-                background: active ? 'var(--orange)' : 'transparent',
+                background: active ? 'var(--orange)' : 'rgba(191,191,186,0.07)',
                 color: active ? '#fff' : 'var(--txt3)',
                 transition: `all var(--duration) var(--ease)`,
                 fontFamily: 'var(--font-body)',
@@ -123,7 +123,7 @@ export default function FeedColumn({ sectionKey, title, subtitle, icon, articles
 
       {/* Articles */}
       <div style={{
-        background: '#fff',
+        background: 'var(--card)',
         overflowY: 'auto',
         maxHeight: 520,
         flex: 1,
