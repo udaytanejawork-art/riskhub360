@@ -60,7 +60,7 @@ export default function OpportunitiesCol({ articles = [] }) {
 
       {/* Cards */}
       <div style={{
-        background: '#fff',
+        background: 'var(--card)',
         overflowY: 'auto', maxHeight: 520, flex: 1,
       }}>
         {articles.length === 0 ? (
@@ -93,7 +93,7 @@ function OppCard({ article, delay }) {
       style={{
         padding: '13px 16px 13px 19px',
         borderBottom: '1px solid var(--border)',
-        background: hovered ? '#F7FAFF' : '#fff',
+        background: hovered ? 'var(--card-hover)' : 'var(--card)',
         transition: `background var(--duration) var(--ease)`,
         animation: `fadeUp 280ms var(--ease) both`,
         animationDelay: `${delay}ms`,
@@ -114,14 +114,14 @@ function OppCard({ article, delay }) {
         <span style={{
           fontSize: 9, fontWeight: 700,
           letterSpacing: '1px', textTransform: 'uppercase',
-          color: 'var(--navy2)', fontFamily: 'var(--font-body)',
+          color: 'var(--txt2)', fontFamily: 'var(--font-body)',
         }}>{source}</span>
       </div>
 
       <div style={{
         fontFamily: 'var(--font-head)',
         fontSize: 13, fontWeight: 600,
-        color: hovered ? 'var(--navy)' : 'var(--txt)',
+        color: hovered ? 'var(--orange)' : 'var(--txt)',
         lineHeight: 1.45, marginBottom: desc ? 6 : 0,
         letterSpacing: '-.15px',
         transition: `color var(--duration)`,
