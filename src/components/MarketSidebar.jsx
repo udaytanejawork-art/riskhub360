@@ -34,7 +34,7 @@ export default function MarketSidebar() {
   return (
     <aside style={{
       width: 320, flexShrink: 0,
-      background: '#fff',
+      background: 'var(--card)',
       borderLeft: '1px solid var(--border)',
       position: 'sticky', top: 64,
       height: 'calc(100vh - 64px)',
@@ -46,11 +46,11 @@ export default function MarketSidebar() {
         padding: '14px 16px 12px',
         borderBottom: '1px solid var(--border)',
         position: 'sticky', top: 0,
-        background: '#fff', zIndex: 10,
+        background: 'var(--card)', zIndex: 10,
         display: 'flex', alignItems: 'center',
       }}>
         <span style={{ fontSize: 14, marginRight: 7 }}>📡</span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--navy)', letterSpacing: '-.1px' }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--orange)', letterSpacing: '-.1px' }}>
           Live Market Conditions
         </span>
       </div>
