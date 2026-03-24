@@ -2,7 +2,6 @@
 // Fetches RSS feeds server-side, bypassing browser CORS restrictions.
 // GET /api/feeds?url=https://feeds.reuters.com/...
 
-export const config = { runtime: 'nodejs18.x' }
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
