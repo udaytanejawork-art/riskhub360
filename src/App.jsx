@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useMemo } from 'react'
-import Header           from './components/Header.jsx'
-import Ticker           from './components/Ticker.jsx'
-import StatusBar        from './components/StatusBar.jsx'
-import SearchBar        from './components/SearchBar.jsx'
-import FeedColumn       from './components/FeedColumn.jsx'
-import OpportunitiesCol from './components/OpportunitiesCol.jsx'
-import MarketSidebar    from './components/MarketSidebar.jsx'
-import EmailDigest      from './components/EmailDigest.jsx'
-import { useFeeds }     from './hooks/useFeeds.js'
+import Header             from './components/Header.jsx'
+import Ticker             from './components/Ticker.jsx'
+import StatusBar          from './components/StatusBar.jsx'
+import SearchBar          from './components/SearchBar.jsx'
+import OpportunityStrip   from './components/OpportunityStrip.jsx'
+import FeedColumn         from './components/FeedColumn.jsx'
+import MarketSidebar      from './components/MarketSidebar.jsx'
+import EmailDigest        from './components/EmailDigest.jsx'
+import { useFeeds }       from './hooks/useFeeds.js'
 
 export default function App() {
   const {
@@ -39,24 +39,27 @@ export default function App() {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
+      {/* ── Fixed top: header, ticker, status, search ── */}
       <Header
         onRefresh={handleRefresh}
         isLoading={status === 'loading'}
         lastUpdated={lastUpdated}
         onDigestOpen={() => setDigestOpen(true)}
       />
-
       <Ticker />
-
       <StatusBar sources={sources} loaded={loaded} status={status} pool={pool} />
-
       <SearchBar
         onSearch={setQuery}
         searchResults={searchResults}
         isSearching={isSearching}
       />
 
-      {/* Main layout */}
+      {/* ── Opportunity strip — prominent, just below search ── */}
+      {!isSearching && (
+        <OpportunityStrip articles={oppArticles} />
+      )}
+
+      {/* ── Main layout ── */}
       {!isSearching && (
         <div style={{
           display: 'flex',
@@ -64,12 +67,12 @@ export default function App() {
           alignItems: 'flex-start',
           background: 'var(--bg)',
         }}>
-          {/* Content area */}
+
+          {/* Left: feed columns */}
           <div style={{ flex: 1, minWidth: 0, overflowX: 'hidden' }}>
 
-            {/* ── Section 1: Live Feeds ── */}
+            {/* Section 1: Intelligence Feeds */}
             <SectionDivider label="Live Intelligence Feeds" />
-
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
@@ -80,79 +83,68 @@ export default function App() {
                 sectionKey="erm"
                 title="Enterprise Risk"
                 subtitle="Cyber · Operational · ESG · AI"
-                icon="🛡️"
+                icon="shield"
                 articles={ermArticles}
               />
               <FeedColumn
                 sectionKey="frm"
                 title="Financial Risk"
                 subtitle="Credit · Liquidity · Basel · Rates"
-                icon="📊"
+                icon="chart"
                 articles={frmArticles}
               />
               <FeedColumn
                 sectionKey="reg"
                 title="Regulatory"
                 subtitle="SEC · BIS · Fed · FDIC"
-                icon="⚖️"
+                icon="scale"
                 articles={regArticles}
                 showSource
               />
             </div>
 
-            {/* ── Section 2: Market & Opportunities ── */}
-            <SectionDivider label="Market Trends & Opportunities" />
-
+            {/* Section 2: Market & Macro */}
+            <SectionDivider label="Market & Macro Trends" />
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(0,3fr) minmax(0,2fr)',
-              gap: 'var(--gap)',
               padding: '0 var(--pad) 40px',
             }}>
               <FeedColumn
                 sectionKey="macro"
-                title="Market & Macro"
-                subtitle="Economy · Central Banks · Trade · Global"
-                icon="🌐"
+                title="Market & Macro Trends"
+                subtitle="Economy · Central Banks · Trade · Global Outlook"
+                icon="globe"
                 articles={macroArticles}
                 showSource
               />
-              <OpportunitiesCol articles={oppArticles} />
             </div>
           </div>
 
-          {/* Market sidebar — hidden on narrow screens via CSS */}
+          {/* Right: market sidebar */}
           <div className="sidebar-hide" style={{ width: 'var(--sidebar-w)', flexShrink: 0 }}>
             <MarketSidebar />
           </div>
         </div>
       )}
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       <footer style={{
         borderTop: '1px solid var(--border)',
         padding: '14px var(--pad)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        background: '#fff',
+        background: 'var(--bg2)',
         flexWrap: 'wrap',
         gap: 10,
       }}>
-        <div style={{
-          fontSize: 11.5,
-          color: 'var(--txt3)',
-          fontFamily: 'var(--font-body)',
-        }}>
-          <strong style={{ color: 'var(--navy)', fontFamily: 'var(--font-head)' }}>RiskHub360</strong>
+        <div style={{ fontSize: 11.5, color: 'var(--txt3)', fontFamily: 'var(--font-body)' }}>
+          <strong style={{ color: 'var(--orange)', fontFamily: 'var(--font-head)' }}>RiskHub360</strong>
           {' '}· Auto-refreshes every 5 min
-          {lastUpdated && <span style={{ color: 'var(--txt4)' }}> · Updated {lastUpdated}</span>}
+          {lastUpdated && (
+            <span style={{ color: 'var(--txt4)' }}> · Updated {lastUpdated}</span>
+          )}
         </div>
-        <div style={{
-          fontSize: 10.5,
-          color: 'var(--txt4)',
-          fontFamily: 'var(--font-body)',
-        }}>
+        <div style={{ fontSize: 10.5, color: 'var(--txt4)', fontFamily: 'var(--font-body)' }}>
           BBC · WSJ · NYT · SEC · BIS · Fed · FDIC · IMF · WEF · TradingView
         </div>
       </footer>
