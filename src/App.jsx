@@ -1,22 +1,24 @@
 import React, { useState, useCallback, useMemo } from 'react'
-import Header        from './components/Header.jsx'
-import Ticker        from './components/Ticker.jsx'
-import StatusBar     from './components/StatusBar.jsx'
-import SearchBar     from './components/SearchBar.jsx'
-import FeedColumn    from './components/FeedColumn.jsx'
+import Header           from './components/Header.jsx'
+import Ticker           from './components/Ticker.jsx'
+import StatusBar        from './components/StatusBar.jsx'
+import SearchBar        from './components/SearchBar.jsx'
+import FeedColumn       from './components/FeedColumn.jsx'
 import OpportunitiesCol from './components/OpportunitiesCol.jsx'
-import MarketSidebar from './components/MarketSidebar.jsx'
-import EmailDigest   from './components/EmailDigest.jsx'
-import { useFeeds }  from './hooks/useFeeds.js'
+import MarketSidebar    from './components/MarketSidebar.jsx'
+import EmailDigest      from './components/EmailDigest.jsx'
+import { useFeeds }     from './hooks/useFeeds.js'
 
 export default function App() {
-  const { pool, sources, loaded, status, loadAll, getSection, opportunities, search, totalCount } = useFeeds()
+  const {
+    pool, sources, loaded, status,
+    loadAll, getSection, opportunities, search,
+  } = useFeeds()
 
   const [query,       setQuery]       = useState('')
   const [digestOpen,  setDigestOpen]  = useState(false)
   const [lastUpdated, setLastUpdated] = useState('')
 
-  // Refresh handler — also sets the timestamp
   const handleRefresh = useCallback(() => {
     loadAll()
     setLastUpdated(new Date().toLocaleString('en-US', {
@@ -25,11 +27,9 @@ export default function App() {
     }))
   }, [loadAll])
 
-  // Search results
   const searchResults = useMemo(() => query ? search(query) : [], [query, search])
   const isSearching   = Boolean(query.trim())
 
-  // Per-section articles
   const ermArticles   = useMemo(() => getSection('erm'),   [getSection, pool])
   const frmArticles   = useMemo(() => getSection('frm'),   [getSection, pool])
   const regArticles   = useMemo(() => getSection('reg'),   [getSection, pool])
@@ -37,8 +37,8 @@ export default function App() {
   const oppArticles   = useMemo(() => opportunities(),     [opportunities, pool])
 
   return (
-    <>
-      {/* Sticky header */}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+
       <Header
         onRefresh={handleRefresh}
         isLoading={status === 'loading'}
@@ -46,70 +46,73 @@ export default function App() {
         onDigestOpen={() => setDigestOpen(true)}
       />
 
-      {/* TradingView ticker tape */}
       <Ticker />
 
-      {/* Status bar */}
       <StatusBar sources={sources} loaded={loaded} status={status} pool={pool} />
 
-      {/* Search bar */}
       <SearchBar
         onSearch={setQuery}
         searchResults={searchResults}
         isSearching={isSearching}
       />
 
-      {/* Main content + right sidebar */}
+      {/* Main layout */}
       {!isSearching && (
-        <div style={{ display: 'flex', alignItems: 'flex-start', background: 'var(--bg)' }}>
+        <div style={{
+          display: 'flex',
+          flex: 1,
+          alignItems: 'flex-start',
+          background: 'var(--bg)',
+        }}>
+          {/* Content area */}
+          <div style={{ flex: 1, minWidth: 0, overflowX: 'hidden' }}>
 
-          {/* Left: all feeds */}
-          <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
-
-            {/* Section: Live Intelligence Feeds */}
+            {/* ── Section 1: Live Feeds ── */}
             <SectionDivider label="Live Intelligence Feeds" />
+
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 18, padding: '12px 36px',
-              background: 'var(--bg)',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 'var(--gap)',
+              padding: '12px var(--pad)',
             }}>
               <FeedColumn
                 sectionKey="erm"
                 title="Enterprise Risk"
-                subtitle="Cyber · Operational · ESG · AI Governance"
+                subtitle="Cyber · Operational · ESG · AI"
                 icon="🛡️"
                 articles={ermArticles}
               />
               <FeedColumn
                 sectionKey="frm"
                 title="Financial Risk"
-                subtitle="Credit · Liquidity · Basel IV · Rates"
+                subtitle="Credit · Liquidity · Basel · Rates"
                 icon="📊"
                 articles={frmArticles}
               />
               <FeedColumn
                 sectionKey="reg"
-                title="Regulatory & Compliance"
-                subtitle="SEC · BIS · Fed · FDIC · Policy"
+                title="Regulatory"
+                subtitle="SEC · BIS · Fed · FDIC"
                 icon="⚖️"
                 articles={regArticles}
                 showSource
               />
             </div>
 
-            {/* Section: Market Trends */}
+            {/* ── Section 2: Market & Opportunities ── */}
             <SectionDivider label="Market Trends & Opportunities" />
+
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '3fr 2fr',
-              gap: 18, padding: '0 36px 40px',
-              background: 'var(--bg)',
+              gridTemplateColumns: 'minmax(0,3fr) minmax(0,2fr)',
+              gap: 'var(--gap)',
+              padding: '0 var(--pad) 40px',
             }}>
               <FeedColumn
                 sectionKey="macro"
-                title="Market & Macro Trends"
-                subtitle="Economy · Central Banks · Trade · Global Outlook"
+                title="Market & Macro"
+                subtitle="Economy · Central Banks · Trade · Global"
                 icon="🌐"
                 articles={macroArticles}
                 showSource
@@ -118,40 +121,61 @@ export default function App() {
             </div>
           </div>
 
-          {/* Right sidebar */}
-          <MarketSidebar />
+          {/* Market sidebar — hidden on narrow screens via CSS */}
+          <div className="sidebar-hide" style={{ width: 'var(--sidebar-w)', flexShrink: 0 }}>
+            <MarketSidebar />
+          </div>
         </div>
       )}
 
       {/* Footer */}
       <footer style={{
-        borderTop: '1px solid var(--border)', padding: '16px 36px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: '#fff', flexWrap: 'wrap', gap: 12,
+        borderTop: '1px solid var(--border)',
+        padding: '14px var(--pad)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        background: '#fff',
+        flexWrap: 'wrap',
+        gap: 10,
       }}>
-        <div style={{ fontSize: 11, color: 'var(--txt3)', lineHeight: 1.7 }}>
-          <strong style={{ color: 'var(--navy)' }}>RiskHub360</strong> · Auto-refreshes every 5 min
-          {lastUpdated && <><br />Last refresh: {lastUpdated}</>}
+        <div style={{
+          fontSize: 11.5,
+          color: 'var(--txt3)',
+          fontFamily: 'var(--font-body)',
+        }}>
+          <strong style={{ color: 'var(--navy)', fontFamily: 'var(--font-head)' }}>RiskHub360</strong>
+          {' '}· Auto-refreshes every 5 min
+          {lastUpdated && <span style={{ color: 'var(--txt4)' }}> · Updated {lastUpdated}</span>}
         </div>
-        <div style={{ fontSize: 10, color: 'var(--txt3)' }}>
-          Reuters · BBC · FT · NYT · SEC · BIS · Fed · FDIC · IMF · WEF · TradingView
+        <div style={{
+          fontSize: 10.5,
+          color: 'var(--txt4)',
+          fontFamily: 'var(--font-body)',
+        }}>
+          BBC · WSJ · NYT · SEC · BIS · Fed · FDIC · IMF · WEF · TradingView
         </div>
       </footer>
 
-      {/* Email digest modal */}
       <EmailDigest pool={pool} isOpen={digestOpen} onClose={() => setDigestOpen(false)} />
-    </>
+    </div>
   )
 }
 
 function SectionDivider({ label }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '22px 36px 8px', background: 'var(--bg)' }}>
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 14,
+      padding: '20px var(--pad) 6px',
+    }}>
       <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
       <div style={{
-        fontSize: 9.5, fontWeight: 700, letterSpacing: 2.5,
-        textTransform: 'uppercase', color: '#fff', whiteSpace: 'nowrap',
-        background: 'var(--navy)', padding: '5px 14px', borderRadius: 4,
+        fontFamily: 'var(--font-body)',
+        fontSize: 9.5, fontWeight: 700,
+        letterSpacing: '2.5px', textTransform: 'uppercase',
+        color: '#fff', whiteSpace: 'nowrap',
+        background: 'var(--navy)',
+        padding: '5px 14px', borderRadius: 5,
       }}>
         {label}
       </div>
