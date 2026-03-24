@@ -1,43 +1,55 @@
 // Vercel Serverless Function — /api/feeds
-// Fetches any RSS URL server-side so the browser never hits a CORS wall.
-// Usage: GET /api/feeds?url=https://feeds.reuters.com/...
+// Fetches RSS feeds server-side, bypassing browser CORS restrictions.
+// GET /api/feeds?url=https://feeds.reuters.com/...
+
+export const config = { runtime: 'nodejs18.x' }
 
 export default async function handler(req, res) {
-  // Allow the frontend to call this
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
+
+  if (req.method === 'OPTIONS') return res.status(200).end()
 
   const { url } = req.query
-  if (!url) {
-    return res.status(400).json({ error: 'Missing ?url= parameter' })
-  }
+  if (!url) return res.status(400).json({ error: 'Missing ?url= parameter' })
+  if (!url.startsWith('http://') && !url.startsWith('https://'))
+    return res.status(400).json({ error: 'Invalid URL — must start with http:// or https://' })
 
-  // Basic safety check — only allow http/https RSS feeds
-  if (!url.startsWith('http://') && !url.startsWith('https://')) {
-    return res.status(400).json({ error: 'Invalid URL' })
-  }
+  // Timeout using Promise.race — more compatible than AbortSignal.timeout
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Request timed out after 12s')), 12000)
+  )
 
   try {
-    const response = await fetch(url, {
+    const fetchPromise = fetch(url, {
       headers: {
-        'User-Agent': 'RiskHub360/1.0 RSS Reader',
-        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+        'User-Agent':      'Mozilla/5.0 (compatible; RiskHub360/1.0; +https://riskhub360.vercel.app)',
+        'Accept':          'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control':   'no-cache',
       },
-      signal: AbortSignal.timeout(10000), // 10 second timeout
+      redirect: 'follow',
     })
 
+    const response = await Promise.race([fetchPromise, timeout])
+
     if (!response.ok) {
-      return res.status(502).json({ error: `Upstream error: ${response.status}` })
+      console.error(`[feeds] ${response.status} for ${url}`)
+      return res.status(502).json({ error: `Source returned ${response.status}` })
     }
 
     const xml = await response.text()
 
-    // Pass the raw XML back to the frontend
-    res.setHeader('Content-Type', 'application/xml')
-    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60') // cache 5 min on Vercel edge
+    if (!xml || xml.trim().length < 50) {
+      return res.status(502).json({ error: 'Empty response from source' })
+    }
+
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8')
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=60')
     return res.status(200).send(xml)
 
   } catch (err) {
+    console.error(`[feeds] Error fetching ${url}:`, err.message)
     return res.status(502).json({ error: err.message || 'Fetch failed' })
   }
 }
