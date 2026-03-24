@@ -1,123 +1,189 @@
+/* ═══════════════════════════════════════════════════════
+   RiskHub360 — Design System
+   Fonts: Sora (headings) + DM Sans (body)
+   Palette: Navy #002B5B · Orange #FF5B35 · White
+═══════════════════════════════════════════════════════ */
+
 :root {
-  --navy:      #002B5B;
-  --navy2:     #003F82;
-  --navy3:     #EAF0F8;
-  --orange:    #FF5B35;
-  --orange2:   #FF7A55;
-  --orange-dk: #E04422;
-  --white:     #FFFFFF;
-  --bg:        #F4F7FB;
-  --card:      #FFFFFF;
-  --border:    rgba(0,43,91,0.1);
-  --border2:   rgba(0,43,91,0.18);
-  --txt:       #0A1628;
-  --txt2:      #374965;
-  --txt3:      #7A90AA;
-  --gold:      #D97706;
-  --green:     #15803D;
-  --red:       #B91C1C;
-  --font:      'Inter', sans-serif;
+  /* Brand */
+  --navy:       #002B5B;
+  --navy2:      #003F82;
+  --navy3:      #EAF0F8;
+  --navy4:      #C8DCEF;
+  --orange:     #FF5B35;
+  --orange2:    #FF7A55;
+  --orange-dk:  #E04422;
+  --orange-pale:#FFF3EF;
+
+  /* Surface */
+  --bg:         #F0F4F9;
+  --bg2:        #E8EEF5;
+  --card:       #FFFFFF;
+  --card-hover: #FAFCFF;
+
+  /* Borders */
+  --border:     rgba(0,43,91,0.09);
+  --border2:    rgba(0,43,91,0.16);
+
+  /* Text */
+  --txt:        #0A1628;
+  --txt2:       #2E4060;
+  --txt3:       #6B84A0;
+  --txt4:       #9FB3C8;
+
+  /* Semantic */
+  --gold:       #D97706;
+  --green:      #15803D;
+  --green2:     #DCFCE7;
+  --red:        #B91C1C;
+  --red2:       #FEE2E2;
+  --blue:       #1D4ED8;
+  --purple:     #6D28D9;
+
+  /* Typography */
+  --font-head:  'Sora', sans-serif;
+  --font-body:  'DM Sans', sans-serif;
+
+  /* Spacing */
+  --gap:        20px;
+  --pad:        28px;
+  --pad-sm:     16px;
+  --radius:     10px;
+  --radius-sm:  6px;
+  --radius-lg:  14px;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 3px rgba(0,43,91,.07), 0 1px 2px rgba(0,43,91,.05);
+  --shadow-md:  0 4px 12px rgba(0,43,91,.09), 0 2px 4px rgba(0,43,91,.06);
+  --shadow-lg:  0 12px 32px rgba(0,43,91,.12), 0 4px 8px rgba(0,43,91,.06);
+
+  /* Transitions */
+  --ease:       cubic-bezier(.4,0,.2,1);
+  --duration:   160ms;
+
+  /* Layout */
+  --header-h:   60px;
+  --sidebar-w:  310px;
 }
 
+/* ── Reset ─────────────────────────────────────────── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; font-size: 16px; }
 body {
-  font-family: var(--font);
+  font-family: var(--font-body);
   background: var(--bg);
   color: var(--txt);
   min-height: 100vh;
-  font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01","cv01";
 }
+button { font-family: var(--font-body); cursor: pointer; }
+a { color: inherit; }
 
-/* Scrollbars */
-::-webkit-scrollbar { width: 4px; height: 4px; }
+/* ── Scrollbars ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--navy3); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--navy4); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--navy3); }
 
-/* Animations */
+/* ── Animations ─────────────────────────────────────── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: .4; transform: scale(.6); }
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: .45; transform: scale(.65); }
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin    { to { transform: rotate(360deg); } }
 @keyframes shimmer { to { background-position: -200% 0; } }
-@keyframes newPulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: .65; }
+@keyframes newPulse{
+  0%,100% { opacity: 1; }
+  50%     { opacity: .7; }
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
 }
 
-/* Skeleton loader */
-.skeleton-line {
-  background: linear-gradient(90deg, #EEF2F8 25%, #E2E8F4 50%, #EEF2F8 75%);
+/* ── Utility classes ─────────────────────────────────── */
+.fade-up { animation: fadeUp var(--duration) var(--ease) both; }
+
+.skeleton {
+  background: linear-gradient(90deg, #EAF0F8 25%, #DDE6F0 50%, #EAF0F8 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.8s infinite;
-  border-radius: 3px;
-  height: 9px;
-  margin-bottom: 7px;
+  animation: shimmer 1.6s infinite;
+  border-radius: var(--radius-sm);
 }
 
-/* NEW badge */
+/* ── NEW badge ──────────────────────────────────────── */
 .new-badge {
   display: inline-block;
-  font-size: 8.5px;
-  font-weight: 800;
-  letter-spacing: 1px;
+  font-family: var(--font-body);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   background: var(--orange);
   color: #fff;
   padding: 2px 6px;
   border-radius: 3px;
-  margin-left: 6px;
+  margin-left: 7px;
   vertical-align: middle;
-  animation: newPulse 2s ease infinite;
+  animation: newPulse 2.5s ease infinite;
 }
 
-/* Status dot */
+/* ── Category pills ─────────────────────────────────── */
+.cat-pill {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .9px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.cat-pill.breaking   { background: rgba(185,28,28,.08);  color: #B91C1C; }
+.cat-pill.regulatory { background: rgba(180,83,9,.09);   color: #92400E; }
+.cat-pill.macro      { background: rgba(29,78,216,.08);  color: #1D4ED8; }
+.cat-pill.market     { background: rgba(109,40,217,.08); color: #6D28D9; }
+.cat-pill.cyber      { background: rgba(255,91,53,.09);  color: var(--orange-dk); }
+.cat-pill.esg        { background: rgba(21,128,61,.08);  color: #15803D; }
+.cat-pill.banking    { background: rgba(0,43,91,.08);    color: var(--navy2); }
+.cat-pill.general    { background: rgba(107,132,160,.1); color: var(--txt3); }
+
+/* ── Status dot ─────────────────────────────────────── */
 .status-dot {
-  width: 6px; height: 6px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--gold);
   flex-shrink: 0;
+  transition: background var(--duration);
 }
 .status-dot.ok  { background: var(--green); }
 .status-dot.err { background: var(--red); }
 
-/* Category pills on news cards */
-.cat-pill {
-  font-size: 9px; font-weight: 700;
-  letter-spacing: .8px; text-transform: uppercase;
-  padding: 2px 8px; border-radius: 3px;
+/* ── Responsive helpers ──────────────────────────────── */
+@media (max-width: 1200px) {
+  :root { --sidebar-w: 280px; --pad: 20px; }
 }
-.cat-pill.breaking   { background: rgba(185,28,28,.08);  color: #B91C1C; }
-.cat-pill.regulatory { background: rgba(180,83,9,.08);   color: #92400E; }
-.cat-pill.macro      { background: rgba(37,99,235,.08);  color: #1D4ED8; }
-.cat-pill.market     { background: rgba(109,40,217,.08); color: #6D28D9; }
-.cat-pill.cyber      { background: rgba(255,91,53,.08);  color: var(--orange-dk); }
-.cat-pill.esg        { background: rgba(21,128,61,.08);  color: #15803D; }
-.cat-pill.banking    { background: rgba(0,43,91,.08);    color: var(--navy); }
-.cat-pill.general    { background: rgba(0,0,0,.05);      color: #666; }
-
-/* Feed column card left-border colours */
-.border-breaking   { background: var(--red); }
-.border-regulatory { background: var(--gold); }
-.border-macro      { background: #2563EB; }
-.border-market     { background: #7C3AED; }
-.border-cyber      { background: var(--orange); }
-.border-esg        { background: var(--green); }
-.border-banking    { background: var(--navy); }
-.border-general    { background: var(--txt3); }
-
-/* Mobile */
-@media (max-width: 1100px) {
-  .hide-mobile { display: none !important; }
+@media (max-width: 1024px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar-hide { display: none !important; }
 }
-@media (max-width: 720px) {
-  .hide-small { display: none !important; }
+@media (max-width: 768px) {
+  :root { --pad: 14px; --gap: 12px; }
+  .mobile-hide { display: none !important; }
+}
+@media (max-width: 480px) {
+  :root { --pad: 10px; --gap: 10px; }
+  .small-hide { display: none !important; }
 }
