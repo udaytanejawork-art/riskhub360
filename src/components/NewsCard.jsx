@@ -1,84 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { timeAgo, isNew } from '../hooks/useFeeds.js'
 
-export default function NewsCard({ article, showSource = false, style = {} }) {
-  const { title, link, desc, date, source, cat } = article
-
-  return (
-    <div
-      className="news-card"
-      data-cat={cat}
-      style={{
-        padding: '14px 16px',
-        borderBottom: '1px solid var(--border)',
-        position: 'relative',
-        overflow: 'hidden',
-        transition: 'background .12s',
-        animation: 'fadeUp .3s ease both',
-        cursor: 'default',
-        ...style,
-      }}
-      onMouseEnter={e => e.currentTarget.style.background = '#F9FBFF'}
-      onMouseLeave={e => e.currentTarget.style.background = ''}
-    >
-      {/* Left colour bar */}
-      <div style={{
-        position: 'absolute', left: 0, top: 0,
-        width: 3, height: '100%',
-        background: CAT_COLORS[cat] || 'var(--txt3)',
-      }} />
-
-      {/* Top row: pill + source */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 7 }}>
-        <span className={`cat-pill ${cat}`}>{cat}</span>
-        {showSource && (
-          <span style={{ fontSize: 10, color: 'var(--txt3)', fontWeight: 600 }}>{source}</span>
-        )}
-      </div>
-
-      {/* Headline */}
-      <div style={{
-        fontFamily: 'var(--font)', fontSize: 13, fontWeight: 700,
-        color: 'var(--txt)', lineHeight: 1.45, marginBottom: 5, letterSpacing: '-.2px',
-      }}>
-        <a
-          href={link} target="_blank" rel="noopener noreferrer"
-          style={{ color: 'inherit', textDecoration: 'none' }}
-          onMouseEnter={e => e.target.style.color = 'var(--orange)'}
-          onMouseLeave={e => e.target.style.color = 'inherit'}
-        >
-          {title}
-        </a>
-        {isNew(date) && <span className="new-badge">NEW</span>}
-      </div>
-
-      {/* Summary */}
-      {desc && (
-        <div style={{ fontSize: 11.5, color: 'var(--txt2)', lineHeight: 1.65 }}>
-          {desc}…
-        </div>
-      )}
-
-      {/* Footer */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
-        {date && (
-          <span style={{ fontSize: 10, color: 'var(--txt3)', fontWeight: 500 }}>{timeAgo(date)}</span>
-        )}
-        <a
-          href={link} target="_blank" rel="noopener noreferrer"
-          style={{ fontSize: 10, color: 'var(--orange)', textDecoration: 'none', fontWeight: 700 }}
-        >
-          Read →
-        </a>
-        {!showSource && (
-          <span style={{ fontSize: 10, color: 'var(--txt3)', marginLeft: 'auto' }}>{source}</span>
-        )}
-      </div>
-    </div>
-  )
-}
-
-const CAT_COLORS = {
+const CAT_BORDER = {
   breaking:   'var(--red)',
   regulatory: 'var(--gold)',
   macro:      '#2563EB',
@@ -86,5 +9,121 @@ const CAT_COLORS = {
   cyber:      'var(--orange)',
   esg:        'var(--green)',
   banking:    'var(--navy)',
-  general:    'var(--txt3)',
+  general:    'var(--txt4)',
+}
+
+export default function NewsCard({ article, showSource = false, delay = 0 }) {
+  const { title, link, desc, date, source, cat } = article
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: '13px 16px 13px 19px',
+        borderBottom: '1px solid var(--border)',
+        position: 'relative',
+        overflow: 'hidden',
+        background: hovered ? '#F7FAFF' : '#fff',
+        transition: `background var(--duration) var(--ease)`,
+        animation: `fadeUp 280ms var(--ease) both`,
+        animationDelay: `${delay}ms`,
+        cursor: 'default',
+      }}
+    >
+      {/* Left accent bar */}
+      <div style={{
+        position: 'absolute', left: 0, top: 0,
+        width: 3, height: '100%',
+        background: CAT_BORDER[cat] || 'var(--txt4)',
+        opacity: hovered ? 1 : .7,
+        transition: `opacity var(--duration)`,
+      }} />
+
+      {/* Top row */}
+      <div style={{
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 7, gap: 8,
+      }}>
+        <span className={`cat-pill ${cat}`}>{cat}</span>
+        {showSource && (
+          <span style={{
+            fontSize: 10, color: 'var(--txt4)',
+            fontWeight: 600, fontFamily: 'var(--font-body)',
+            whiteSpace: 'nowrap', overflow: 'hidden',
+            textOverflow: 'ellipsis', maxWidth: 120,
+          }}>{source}</span>
+        )}
+      </div>
+
+      {/* Headline */}
+      <div style={{
+        fontFamily: 'var(--font-head)',
+        fontSize: 13,
+        fontWeight: 600,
+        color: hovered ? 'var(--navy)' : 'var(--txt)',
+        lineHeight: 1.45,
+        marginBottom: desc ? 6 : 0,
+        letterSpacing: '-.15px',
+        transition: `color var(--duration)`,
+      }}>
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          {title}
+        </a>
+        {isNew(date) && <span className="new-badge">New</span>}
+      </div>
+
+      {/* Summary */}
+      {desc && (
+        <div style={{
+          fontSize: 12,
+          color: 'var(--txt3)',
+          lineHeight: 1.6,
+          marginBottom: 8,
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}>
+          {desc}
+        </div>
+      )}
+
+      {/* Footer */}
+      <div style={{
+        display: 'flex', alignItems: 'center',
+        gap: 10, fontSize: 10.5,
+      }}>
+        {date && (
+          <span style={{ color: 'var(--txt4)', fontWeight: 500 }}>{timeAgo(date)}</span>
+        )}
+        {!showSource && (
+          <span style={{ color: 'var(--txt4)', fontWeight: 500 }}>{source}</span>
+        )}
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            marginLeft: 'auto',
+            color: 'var(--orange)',
+            fontWeight: 700,
+            textDecoration: 'none',
+            display: 'flex', alignItems: 'center', gap: 3,
+            transition: `opacity var(--duration)`,
+            opacity: hovered ? 1 : .7,
+          }}
+        >
+          Read →
+        </a>
+      </div>
+    </div>
+  )
 }
