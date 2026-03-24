@@ -22,14 +22,14 @@ export default function SearchBar({ onSearch, searchResults, isSearching }) {
     <>
       {/* Search input bar */}
       <div style={{
-        background: '#fff',
+        background: 'var(--card)',
         borderBottom: '1px solid var(--border)',
         padding: '9px var(--pad)',
         display: 'flex', alignItems: 'center', gap: 10,
       }}>
         {/* Search icon */}
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-          stroke="var(--txt4)" strokeWidth="2.5" style={{ flexShrink: 0 }}>
+          stroke="var(--txt3)" strokeWidth="2.5" style={{ flexShrink: 0 }}>
           <circle cx="11" cy="11" r="8"/>
           <path d="m21 21-4.35-4.35"/>
         </svg>
@@ -105,7 +105,7 @@ export default function SearchBar({ onSearch, searchResults, isSearching }) {
             }}>
               {searchResults.map((a, i) => (
                 <div key={`${a.title}-${i}`} style={{
-                  background: '#fff',
+                  background: 'var(--card)',
                   borderRadius: 'var(--radius)',
                   border: '1px solid var(--border)',
                   overflow: 'hidden',
