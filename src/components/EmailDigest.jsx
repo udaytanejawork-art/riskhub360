@@ -70,7 +70,7 @@ export default function EmailDigest({ pool, isOpen, onClose }) {
       onClick={e => e.target === e.currentTarget && onClose()}
     >
       <div style={{
-        background: '#fff', border: '1px solid var(--border2)',
+        background: 'var(--card)', border: '1px solid var(--border2)',
         borderRadius: 12, width: '100%', maxWidth: 680,
         maxHeight: '88vh', display: 'flex', flexDirection: 'column',
         boxShadow: '0 20px 60px rgba(0,43,91,.2)',
@@ -78,18 +78,18 @@ export default function EmailDigest({ pool, isOpen, onClose }) {
         {/* Header */}
         <div style={{ padding: '20px 24px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexShrink: 0 }}>
           <div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--navy)' }}>📧 RiskHub360 Daily Digest</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--orange)' }}>📧 RiskHub360 Daily Digest</div>
             <div style={{ fontSize: 11.5, color: 'var(--txt3)', marginTop: 3 }}>Top articles from all feeds · {now}</div>
           </div>
-          <button onClick={onClose} style={{ width: 30, height: 30, background: '#F4F7FB', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--txt3)', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+          <button onClick={onClose} style={{ width: 30, height: 30, background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 6, color: 'var(--txt3)', fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
         </div>
 
         {/* Preview */}
         <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
-          <div style={{ background: '#F4F7FB', border: '1px solid var(--border)', borderRadius: 8, padding: 20, fontSize: 12.5, lineHeight: 1.7, color: 'var(--txt2)' }}>
+          <div style={{ background: 'var(--bg)', border: '1px solid var(--border)', borderRadius: 8, padding: 20, fontSize: 12.5, lineHeight: 1.7, color: 'var(--txt2)' }}>
             {/* Digest header */}
             <div style={{ borderBottom: '2px solid var(--navy)', paddingBottom: 14, marginBottom: 18 }}>
-              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--navy)' }}>RiskHub<span style={{ color: 'var(--orange)' }}>360</span></div>
+              <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--orange)' }}>RiskHub<span style={{ color: 'var(--orange)' }}>360</span></div>
               <div style={{ fontSize: 11, color: 'var(--txt3)', marginTop: 4 }}>{now}</div>
             </div>
 
@@ -102,7 +102,7 @@ export default function EmailDigest({ pool, isOpen, onClose }) {
               if (!items.length) return null
               return (
                 <div key={sec.label} style={{ marginBottom: 18 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--navy)', marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--orange)', marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
                     {sec.label}
                   </div>
                   {items.map((a, i) => (
@@ -130,11 +130,11 @@ export default function EmailDigest({ pool, isOpen, onClose }) {
             value={recipient}
             onChange={e => setRecipient(e.target.value)}
             placeholder="recipient@company.com"
-            style={{ flex: 1, minWidth: 180, background: '#F4F7FB', border: '1.5px solid var(--border)', borderRadius: 7, padding: '8px 12px', fontFamily: 'var(--font)', fontSize: 12.5, color: 'var(--txt)', outline: 'none' }}
+            style={{ flex: 1, minWidth: 180, background: 'var(--bg)', border: '1.5px solid var(--border)', borderRadius: 7, padding: '8px 12px', fontFamily: 'var(--font)', fontSize: 12.5, color: 'var(--txt)', outline: 'none' }}
             onFocus={e => e.target.style.borderColor = 'var(--navy2)'}
             onBlur={e  => e.target.style.borderColor = 'var(--border)'}
           />
-          <button onClick={copyText} style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F4F7FB', color: copied ? 'var(--green)' : 'var(--txt2)', border: '1px solid var(--border)', padding: '9px 16px', borderRadius: 7, fontFamily: 'var(--font)', fontWeight: 600, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+          <button onClick={copyText} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'var(--bg)', color: copied ? 'var(--green)' : 'var(--txt2)', border: '1px solid var(--border)', padding: '9px 16px', borderRadius: 7, fontFamily: 'var(--font)', fontWeight: 600, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}>
             {copied ? '✅ Copied!' : '📋 Copy'}
           </button>
           <button onClick={sendEmail} style={{ display: 'flex', alignItems: 'center', gap: 7, background: 'var(--orange)', color: '#fff', border: 'none', padding: '9px 20px', borderRadius: 7, fontFamily: 'var(--font)', fontWeight: 700, fontSize: 12.5, cursor: 'pointer', whiteSpace: 'nowrap' }}>
