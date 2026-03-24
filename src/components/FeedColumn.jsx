@@ -1,124 +1,160 @@
 import React, { useState, useMemo } from 'react'
 import NewsCard from './NewsCard.jsx'
 
-const TABS = {
-  erm:   ['all', 'cyber', 'regulatory', 'esg'],
-  frm:   ['all', 'banking', 'market', 'macro'],
-  reg:   ['all', 'regulatory', 'breaking', 'banking'],
-  macro: ['all', 'breaking', 'macro', 'market'],
+const COLUMN_TABS = {
+  erm:   ['All', 'Cyber', 'Regulatory', 'ESG'],
+  frm:   ['All', 'Banking', 'Market', 'Macro'],
+  reg:   ['All', 'Regulatory', 'Breaking', 'Banking'],
+  macro: ['All', 'Breaking', 'Economy', 'Market'],
+}
+
+const TAB_TO_CAT = {
+  'All': 'all', 'Cyber': 'cyber', 'Regulatory': 'regulatory', 'ESG': 'esg',
+  'Banking': 'banking', 'Market': 'market', 'Macro': 'macro',
+  'Breaking': 'breaking', 'Economy': 'macro',
 }
 
 export default function FeedColumn({ sectionKey, title, subtitle, icon, articles = [], showSource = false }) {
-  const [activeTab, setActiveTab] = useState('all')
-  const tabs = TABS[sectionKey] || ['all']
+  const [activeTab, setActiveTab] = useState('All')
+  const tabs = COLUMN_TABS[sectionKey] || ['All']
 
   const filtered = useMemo(() => {
-    if (activeTab === 'all') return articles
-    return articles.filter(a => a.cat === activeTab)
+    const cat = TAB_TO_CAT[activeTab]
+    return cat === 'all' ? articles : articles.filter(a => a.cat === cat)
   }, [articles, activeTab])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      minWidth: 0,
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-lg)',
+      overflow: 'hidden',
+      boxShadow: 'var(--shadow-sm)',
+      transition: `box-shadow var(--duration) var(--ease)`,
+    }}
+      onMouseEnter={e => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
+      onMouseLeave={e => e.currentTarget.style.boxShadow = 'var(--shadow-sm)'}
+    >
 
       {/* Column header */}
       <div style={{
         background: 'var(--navy)',
-        border: '1px solid var(--navy)',
-        borderBottom: 'none',
-        borderRadius: '10px 10px 0 0',
         padding: '14px 16px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 10,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <div style={{
-            width: 30, height: 30, background: 'var(--orange)',
-            borderRadius: 6, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: 13, flexShrink: 0,
+            width: 32, height: 32,
+            background: 'var(--orange)',
+            borderRadius: 8,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 15, flexShrink: 0,
           }}>
             {icon}
           </div>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: '-.2px' }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{
+              fontFamily: 'var(--font-head)',
+              fontSize: 13.5, fontWeight: 700,
+              color: '#fff', letterSpacing: '-.2px',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>
               {title}
             </div>
-            <div style={{ fontSize: 9.5, color: 'rgba(255,255,255,.5)', marginTop: 2, fontWeight: 500 }}>
+            <div style={{
+              fontSize: 9.5, color: 'rgba(255,255,255,.45)',
+              marginTop: 2, fontFamily: 'var(--font-body)',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            }}>
               {subtitle}
             </div>
           </div>
         </div>
-        <span style={{
-          fontSize: 10, fontWeight: 700,
-          background: 'rgba(255,255,255,.12)', color: 'rgba(255,255,255,.85)',
-          padding: '3px 10px', borderRadius: 4,
-          border: '1px solid rgba(255,255,255,.2)',
+
+        {/* Article count badge */}
+        <div style={{
+          flexShrink: 0,
+          background: 'rgba(255,255,255,.1)',
+          border: '1px solid rgba(255,255,255,.15)',
+          borderRadius: 20,
+          padding: '3px 10px',
+          fontSize: 10.5, fontWeight: 700,
+          color: 'rgba(255,255,255,.8)',
+          fontFamily: 'var(--font-body)',
+          whiteSpace: 'nowrap',
         }}>
-          {articles.length} articles
-        </span>
+          {articles.length}
+        </div>
       </div>
 
       {/* Filter tabs */}
       <div style={{
         background: '#fff',
-        border: '1px solid var(--border)',
-        borderTop: 'none',
         borderBottom: '1px solid var(--border)',
         padding: '8px 12px',
-        display: 'flex', gap: 5, flexWrap: 'wrap',
+        display: 'flex', gap: 5,
+        overflowX: 'auto', scrollbarWidth: 'none',
       }}>
-        {tabs.map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              fontSize: 10, fontWeight: 600,
-              padding: '4px 12px', borderRadius: 4,
-              border: '1px solid var(--border)',
-              background: activeTab === tab ? 'var(--orange)' : 'transparent',
-              color:      activeTab === tab ? '#fff' : 'var(--txt3)',
-              borderColor: activeTab === tab ? 'var(--orange)' : 'var(--border)',
-              cursor: 'pointer', transition: 'all .15s',
-              fontFamily: 'var(--font)',
-            }}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+        {tabs.map(tab => {
+          const active = tab === activeTab
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                flexShrink: 0,
+                fontSize: 10.5, fontWeight: 600,
+                padding: '4px 12px', borderRadius: 5,
+                border: `1px solid ${active ? 'var(--orange)' : 'var(--border)'}`,
+                background: active ? 'var(--orange)' : 'transparent',
+                color: active ? '#fff' : 'var(--txt3)',
+                transition: `all var(--duration) var(--ease)`,
+                fontFamily: 'var(--font-body)',
+                letterSpacing: '.2px',
+              }}
+            >
+              {tab}
+            </button>
+          )
+        })}
       </div>
 
       {/* Articles */}
       <div style={{
         background: '#fff',
-        border: '1px solid var(--border)',
-        borderTop: 'none',
-        borderRadius: '0 0 10px 10px',
         overflowY: 'auto',
-        maxHeight: 500,
+        maxHeight: 520,
         flex: 1,
       }}>
         {filtered.length === 0 ? (
-          <EmptyState />
+          <div style={{
+            padding: '40px 20px',
+            textAlign: 'center',
+            color: 'var(--txt4)',
+            fontSize: 13,
+            lineHeight: 1.7,
+          }}>
+            <div style={{ fontSize: 28, marginBottom: 10 }}>📰</div>
+            <div style={{ fontFamily: 'var(--font-head)', fontWeight: 600, marginBottom: 4 }}>
+              No articles yet
+            </div>
+            <div style={{ fontSize: 11.5 }}>
+              {articles.length === 0 ? 'Loading feeds…' : 'Try a different filter'}
+            </div>
+          </div>
         ) : (
           filtered.map((a, i) => (
             <NewsCard
-              key={a.title + i}
+              key={`${a.title}-${i}`}
               article={a}
               showSource={showSource}
-              style={{ animationDelay: `${i * 0.04}s` }}
+              delay={Math.min(i * 35, 400)}
             />
           ))
         )}
       </div>
-    </div>
-  )
-}
-
-function EmptyState() {
-  return (
-    <div style={{ padding: '36px 20px', textAlign: 'center', color: 'var(--txt3)', fontSize: 13, lineHeight: 1.7 }}>
-      <div style={{ fontSize: 26, marginBottom: 10 }}>📰</div>
-      No matching articles right now.
-      <br />
-      <small style={{ fontSize: 10 }}>Try another filter or click Refresh.</small>
     </div>
   )
 }
